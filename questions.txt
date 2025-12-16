@@ -1,0 +1,43 @@
+(1) Write a PySpark program to create a DataFrame with four columns: “name”, “age”, “city”, and
+23“gender” and perform the following operations:
+* Insert minimum 10 values for the given columns.
+* Filter rows with age greater than 30.
+* Add a new column named it “tax”.
+* Rename the “age” column to “years”.
+* Drop Multiple Columns from the given data frame.
+
+(2) Write a PySpark program to create a DataFrame containing information about various products,
+including ProductID, ProductName, Category, Price, StockQuantity, & Rating and perform the
+following operations:
+* Insert minimum 10 values for the given columns.
+* Sort the DataFrame first by Price in descending order and then by Category in ascending order.
+* Find the total sales amount for each product by category.
+* Find the total sales amount and the total quantity sold for each product.
+
+(3) Using PySpark, analyze airline flight data (e.g., departure and arrival times, delays, carrier
+information) and perform the following operations:
+* Load a CSV file containing airline flight data
+* Filter flights that were more than 15 minutes delayed.
+* Analyze whether there is any correlation between the flight length and the likelihood of a delay.
+
+(4) Consider airline flight data, given in the previous question. Perform the following operation
+using PySpark
+* Group the data by airline carrier and compute the average delay for each one.
+* Determine the top five routes (origin-destination) with the highest average delay.
+
+(5) Given Movie & Rating dataset containing user ratings for movies, using PySpark SQL perform the
+following operations
+* Load CSV files containing movie & rating data
+* Create temporary views for movies and ratings.
+* Write queries to find the top 10 highest-rated movies with at least 10 ratings.
+* Find the most active users (users who have rated the most movies).
+
+(6) Create a DataFrame containing real estate data with the following columns: HouseID, Location,
+Size, Bedrooms, Bathrooms, Price etc. Use the given dataset to build a linear regression model
+using PySpark's MLlib to predict the Price of a house based on the other features.
+* Preprocess the data by handling missing values, encoding categorical variables (Location),
+and normalizing numerical features (Size, Bedrooms, Bathrooms, etc).
+* Split the data into training and testing sets.
+* Train a linear regression model on the training data.
+* Evaluate the model's performance on the test data using the root mean square error (RMSE)
+* Display the feature importances and interpret the results.
