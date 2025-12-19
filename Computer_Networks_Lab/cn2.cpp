@@ -3,6 +3,89 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+#define V 5
+#define INF 9999
+
+char nodes[V] = {'A','B','C','D','E'};
+
+void distanceVector(int graph[V][V]) {
+    int dist[V][V];
+    int nextHop[V][V];
+
+    for(int i=0;i<V;i++){
+        for(int j=0;j<V;j++){
+            dist[i][j] = graph[i][j];
+
+            if (i == j || graph[i][j] == INF)
+                nextHop[i][j] = -1;
+            else
+                nextHop[i][j] = j;
+        }
+    }
+
+    cout << "\nSTEP 1: Direct Link Routing Tables\n";
+    for(int i=0;i<V;i++){
+        cout << "\nNode " << nodes[i] << " Routing Table\n";
+        cout << "Dest\tCost\tNextHop\n";
+        for(int j=0;j<V;j++){
+            cout << nodes[j] << "\t";
+            if(dist[i][j] == INF) cout << "INF\t";
+            else cout << dist[i][j] << "\t";
+
+            if(nextHop[i][j] == -1) cout << "-\n";
+            else cout << nodes[nextHop[i][j]] << "\n";
+        }
+    }
+
+    // Distance Vector Updates
+    for(int k=0;k<V-1;k++){
+        for(int i=0;i<V;i++){
+            for(int j=0;j<V;j++){
+                for(int via=0;via<V;via++){
+                    if(dist[i][via] + dist[via][j] < dist[i][j]){
+                        dist[i][j] = dist[i][via] + dist[via][j];
+                        nextHop[i][j] = nextHop[i][via];
+                    }
+                }
+            }
+        }
+    }
+
+    cout << "\nSTEP 2: Final Shortest Path Routing Tables\n";
+    for(int i=0;i<V;i++){
+        cout << "\nNode " << nodes[i] << " Routing Table\n";
+        cout << "Dest\tCost\tNextHop\n";
+        for(int j=0;j<V;j++){
+            cout << nodes[j] << "\t";
+            if(dist[i][j] == INF) cout << "INF\t";
+            else cout << dist[i][j] << "\t";
+
+            if(nextHop[i][j] == -1) cout << "-\n";
+            else cout << nodes[nextHop[i][j]] << "\n";
+        }
+    }
+}
+
+int main(){
+    int graph[V][V] = {
+        {0,   2,   INF, 1,   INF},
+        {2,   0,   3,   2,   INF},
+        {INF, 3,   0,   INF, 1},
+        {1,   2,   INF, 0,   1},
+        {INF, INF, 1,   1,   0}
+    };
+
+    distanceVector(graph);
+    return 0;
+}
+
+/*
+
+// simpler implementation of Dist Vec Routing(if next hop details aren't needed)
+
+#include <bits/stdc++.h>
+using namespace std;
+
 #define INF 9999
 #define N 5
 
@@ -49,3 +132,5 @@ int main() {
 
     return 0;
 }
+
+*/

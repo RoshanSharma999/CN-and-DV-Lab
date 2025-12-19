@@ -1,0 +1,221 @@
+1. Simulate three nodes - point-to-point networks with duplex links between them.
+Apply UDP agent, set the queue size and vary the bandwidth and find the number of packets sent and dropped.
+
+2. Simulate three nodes - point-to-point networks with duplex links between them.
+Apply UDP agent, set the queue size and vary the bandwidth and find the number of packets received and dropped.
+
+3. Simulate three nodes - point-to-point networks with duplex links between them.
+Apply UDP agent, set the queue size and vary the bandwidth and find the number of packets sent and received.
+
+TCl Script same for all the above 3 - questions:(1.tcl)
+
+set ns [new Simulator]
+set nf [open prog1.nam w]
+$ns namtrace-all $nf
+set nd [open prog1.tr w]
+$ns trace-all $nd
+
+proc finish { } {
+global ns nf nd
+$ns flush-trace
+close $nf
+close $nd
+exec nam prog1.nam &
+exit 0
+}
+
+set n0 [$ns node]
+set n1 [$ns node]
+set n2 [$ns node]
+
+$ns duplex-link $n0 $n1 1Mb 10ms DropTail
+$ns duplex-link $n1 $n2 512Kb 10ms DropTail
+$ns queue-limit $n1 $n2 5
+
+set udp0 [new Agent/UDP]
+$ns attach-agent $n0 $udp0
+set cbr0 [new Application/Traffic/CBR]
+$cbr0 set packetSize_ 500
+$cbr0 set interval_ 0.005
+$cbr0 attach-agent $udp0
+set sink [new Agent/Null]
+$ns attach-agent $n2 $sink
+$ns connect $udp0 $sink
+
+$ns at 0.2 "$cbr0 start"
+$ns at 4.5 "$cbr0 stop"
+$ns at 5.0 "finish"
+$ns run
+
+
+Question 1,2,3:(awk file)(depending on what is asked)
+
+BEGIN {
+    dcount = 0;
+    rcount = 0;
+    sent=0;
+}
+{
+    event = $1;
+    from = $3;
+    to = $4;
+    if(event == "d"){
+        dcount++;
+    }
+    if(event == "r" && from ="1" & to="2" ){
+        rcount++;
+    }
+    if(event=="+" && from=="0" && to=="1"){
+        sent++;
+    }
+}
+END {
+    printf("The no.of packets dropped  : %d\n ",dcount);
+    printf("The no.of packets recieved : %d\n ",rcount);
+    printf("The no.of packets sent : %d\n ",sent);
+}
+
+Ouput: 
+The no.of packets dropped  : 306
+The no.of packets recieved : 555
+The no.of packets sent : 861
+
+--------------------------------------------------------------------------------------------------------------
+
+4. Simulate a four-node point-to-point network, and connect the links as follows: n0->n2, n1->n2 and n2->n3.
+Apply TCP agent between n0->n3 and UDP agent between n1->n3 agent. Changing the parameters, determine the number of packets by sent TCP and UDP.
+
+5. Simulate a four-node point-to-point network, and connect the links as follows: n0->n2, n1->n2 and n2->n3.
+Apply TCP agent between n0->n3 and UDP agent between n1->n3 agent. Changing the parameters, determine the number of packets received by TCP and UDP.
+
+6. Simulate a four-node point-to-point network, and connect the links as follows: n0->n2, n1->n2 and n2->n3.
+Apply TCP agent between n0->n3 and UDP agent between n1->n3 agent. Changing the parameters, determine the number of packets dropped by TCP and UDP.
+
+
+Tcl Script same for all above :
+set ns [new Simulator]
+set nf [open prog2.nam w]
+$ns namtrace-all $nf
+set nd [open prog2.tr w]
+$ns trace-all $nd
+
+proc finish {} {
+global ns nf nd
+$ns flush-trace
+close $nf
+exec nam prog2.nam &
+exit 0
+}
+
+set n0 [$ns node]
+set n1 [$ns node]
+set n2 [$ns node]
+set n3 [$ns node]
+
+#set color to the nodes
+$n1 color blue
+$n0 color red
+$n2 color purple
+$n3 color orange
+
+
+$ns color 1 blue
+
+$n0 label TCP
+$n1 label UDP
+$n3 label NULL-TCPSINK
+
+$ns duplex-link $n0 $n2 1Mb 10ms DropTail
+$ns duplex-link $n1 $n2 1Mb 10ms DropTail
+$ns duplex-link $n2 $n3 1Mb 10ms DropTail
+
+set tcp0 [new Agent/TCP]
+$ns attach-agent $n0 $tcp0
+
+set sink0 [new Agent/TCPSink]
+$ns attach-agent $n3 $sink0
+$ns connect $tcp0 $sink0
+$tcp0 set fid_ 1
+
+#$tcp0 set class_ 1
+
+set ftp2 [new Application/FTP]
+$ftp2 attach-agent $tcp0
+
+set udp0 [new Agent/UDP]
+$ns attach-agent $n1 $udp0
+set null0 [new Agent/Null]
+$ns attach-agent $n3 $null0
+$ns connect $udp0 $null0
+
+set cbr0 [new Application/Traffic/CBR]
+$cbr0 set packetSize_ 500
+$cbr0 set interval_ 0.005
+$cbr0 attach-agent $udp0
+
+$ns at 0.2 "$cbr0 start"
+$ns at 0.1 "$ftp2 start"
+$ns at 4.5 "$cbr0 stop"
+$ns at 4.4 "$ftp2 stop"
+
+$ns at 5.0 "finish"
+$ns run
+
+
+awk file:
+
+BEGIN {
+    rtcp=0;
+    rudp=0;
+    dtcp=0;
+    dudp=0;
+    ctcp=0;
+    cudp=0;
+}
+{
+    pkt=$5;
+    event=$1;
+    fromnode=$9;
+    tonode=$10;
+    if(event=="r" && pkt=="cbr" && fromnode=="1.0") { rudp++;}
+    if(event=="r" && pkt=="tcp" && fromnode=="0.0") { rtcp++;}
+    if(event=="d" && pkt=="cbr" && fromnode=="1.0") { dudp++;}
+    if(event=="d" && pkt=="tcp" && fromnode=="0.0") { dtcp++;}
+    if(event=="+" && pkt=="cbr" && fromnode=="1.0" && tonode=="3.1") { cudp++;}
+    if(event=="+" && pkt=="tcp" && fromnode=="0.0" && tonode=="3.0") { ctcp++;}
+}
+END {
+    printf("\nNo of packets sent\nTcp : %d\nUdp : %d\n",ctcp,cudp);
+    printf("\nNo of packets received\nTcp : %d\nUdp : %d\n",rtcp,rudp);
+    printf("\nNo of packets dropped\nTcp : %d\nUdp : %d\n",dtcp,dudp);
+}
+
+Output:
+No of packets sent
+Tcp : 316
+Udp : 1722
+
+No of packets received
+Tcp : 304
+Udp : 1688
+
+No of packets dropped
+Tcp : 12
+Udp : 34
+
+--------------------------------------------------------------------------------------------------------------
+
+How to run a ns2 program
+
+ns  --- > % (to enter)
+(ns close)
+
+now generate two files 
+gedit pgm.tcl  and gedit pgm.awk
+
+write the codes 
+then run  : ns pgm.tcl
+two files 1) pgm.nam 2) pgm.tr will be created 
+now run : awk -f pgm.awk pgm.tr
+
+the output will be generated

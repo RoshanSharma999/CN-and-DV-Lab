@@ -26,7 +26,7 @@ int main() {
 
     cout << "\nEnter packet details:\n";
     cout << "(PacketID FlowID Priority)\n";
-
+    string stfu;
     for (int i = 0; i < n; i++) {
         Packet p;
         cin >> p.packetId >> p.flowId >> p.priority;
