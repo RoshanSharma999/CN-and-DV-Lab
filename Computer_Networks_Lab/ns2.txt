@@ -207,15 +207,17 @@ Udp : 34
 
 How to run a ns2 program
 
+(to check if "ns" is installed)
 ns  --- > % (to enter)
 (ns close)
 
-now generate two files 
-gedit pgm.tcl  and gedit pgm.awk
+now create two files 
+pgm.tcl and pgm.awk
+write the codes in the respective files
 
-write the codes 
 then run  : ns pgm.tcl
-two files 1) pgm.nam 2) pgm.tr will be created 
-now run : awk -f pgm.awk pgm.tr
+ns window will open -> run and complete the simulation
+two files 1) pgm.nam 2) pgm.tr will be created
 
+now run : awk -f pgm.awk pgm.tr
 the output will be generated
