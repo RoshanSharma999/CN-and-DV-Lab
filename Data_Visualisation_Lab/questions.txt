@@ -1,5 +1,5 @@
-(1) Write a PySpark program to create a DataFrame with four columns: “name”, “age”, “city”, and
-23“gender” and perform the following operations:
+(1) Write a PySpark program to create a DataFrame with four columns: “name”, “age”, “city”, and “gender”
+and perform the following operations:
 * Insert minimum 10 values for the given columns.
 * Filter rows with age greater than 30.
 * Add a new column named it “tax”.
